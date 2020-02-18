@@ -32,12 +32,12 @@
     (is (= "egsgqwtahuiljgs"
            (cipher/encode "scones" "meetmebythetree")))))
 
-; (deftest test-decode
-;   (testing "can decode a message given an encoded message and a secret keyword"
-;     (is (= "meetmeontuesdayeveningatseven"
-;            (cipher/decode "vigilance" "hmkbxebpxpmyllyrxiiqtoltfgzzv")))
-;     (is (= "meetmebythetree"
-;            (cipher/decode "scones" "egsgqwtahuiljgs")))))
+(deftest test-decode
+  (testing "can decode a message given an encoded message and a secret keyword"
+    (is (= "meetmeontuesdayeveningatseven"
+           (cipher/decode "vigilance" "hmkbxebpxpmyllyrxiiqtoltfgzzv")))
+    (is (= "meetmebythetree"
+           (cipher/decode "scones" "egsgqwtahuiljgs")))))
 
 ; (deftest test-decipher
 ;   (testing "can extract the secret keyword given an encrypted message and the original message"

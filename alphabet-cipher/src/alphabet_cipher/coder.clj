@@ -25,8 +25,17 @@
     (->> (map letter-by-chart repeat-keyword message)
          (apply str))))
 
+(defn letter-decode [key-letter msg-letter]
+  (let [row (rotate-alpha key-letter)
+        indices (zipmap row (range))
+        column (get indices msg-letter)]
+    (nth alphabet column)))
+
 (defn decode [keyword message]
-  "decodeme")
+  (let [msg-size (count message)
+        repeat-keyword (apply str (take msg-size (cycle keyword)))]
+    (->> (map letter-decode repeat-keyword message)
+         (apply str))))
 
 (defn decipher [cipher message]
   "decypherme")
