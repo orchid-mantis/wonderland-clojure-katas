@@ -13,23 +13,22 @@
       (= ch \z) (concat mid left)
       :else (concat mid right left))))
 
-(defn letter-by-chart [key-letter msg-letter]
-  (let [row (rotate-alpha msg-letter)
-        indices (zipmap alphabet (range))
-        column (get indices key-letter)]
-    (nth row column)))
+(defn letter-by-chart [msg-char index-from column-from]
+  (let [indices (zipmap index-from (range))
+        column (get indices msg-char)]
+    (nth column-from column)))
+
+(defn letter-encode [key-char msg-char]
+  (letter-by-chart msg-char alphabet (rotate-alpha key-char)))
+
+(defn letter-decode [key-char msg-char]
+  (letter-by-chart msg-char (rotate-alpha key-char) alphabet))
 
 (defn encode [keyword message]
   (let [msg-size (count message)
         repeat-keyword (apply str (take msg-size (cycle keyword)))]
-    (->> (map letter-by-chart repeat-keyword message)
+    (->> (map letter-encode repeat-keyword message)
          (apply str))))
-
-(defn letter-decode [key-letter msg-letter]
-  (let [row (rotate-alpha key-letter)
-        indices (zipmap row (range))
-        column (get indices msg-letter)]
-    (nth alphabet column)))
 
 (defn decode [keyword message]
   (let [msg-size (count message)

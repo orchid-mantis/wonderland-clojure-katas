@@ -14,16 +14,23 @@
     (is (= "qrstuvwxyzabcdefghijklmnop"
            (list->str (cipher/rotate-alpha \q))))))
 
-(deftest test-letter-by-chart
-  (testing "can obtain correct letter via chart"
+(deftest test-letter-encode
+  (testing "can encode keyword letter and message letter into single letter"
     (is (= \a
-           (cipher/letter-by-chart \a \a)))
+           (cipher/letter-encode \a \a)))
     (is (= \y
-           (cipher/letter-by-chart \z \z)))
-    (is (= \g
-           (cipher/letter-by-chart \z \h)))
+           (cipher/letter-encode \z \z)))
     (is (= \t
-           (cipher/letter-by-chart \e \p)))))
+           (cipher/letter-encode \e \p)))))
+
+(deftest test-letter-decode
+  (testing "can encode keyword letter and message letter into single letter"
+    (is (= \a
+           (cipher/letter-decode \a \a)))
+    (is (= \z
+         (cipher/letter-decode \z \y)))
+    (is (= \z
+           (cipher/letter-decode \s \r)))))
 
 (deftest test-encode
   (testing "can encode a message with a secret keyword"
