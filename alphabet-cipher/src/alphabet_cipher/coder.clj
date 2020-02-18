@@ -24,17 +24,17 @@
 (defn letter-decode [key-char msg-char]
   (letter-by-chart msg-char (rotate-alpha key-char) alphabet))
 
-(defn encode [keyword message]
+(defn cipher [f keyword message]
   (let [msg-size (count message)
         repeat-keyword (apply str (take msg-size (cycle keyword)))]
-    (->> (map letter-encode repeat-keyword message)
+    (->> (map f repeat-keyword message)
          (apply str))))
 
+(defn encode [keyword message]
+  (cipher letter-encode keyword message))
+
 (defn decode [keyword message]
-  (let [msg-size (count message)
-        repeat-keyword (apply str (take msg-size (cycle keyword)))]
-    (->> (map letter-decode repeat-keyword message)
-         (apply str))))
+  (cipher letter-decode keyword message))
 
 (defn decipher [cipher message]
   "decypherme")
