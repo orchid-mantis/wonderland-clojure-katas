@@ -37,5 +37,11 @@
   (cipher letter-decode keyword message))
 
 (defn decipher [cipher message]
-  "decypherme")
-
+  (let [decoded (map letter-decode message cipher)
+        size (count decoded)
+        candidates (take size (iterate drop-last decoded))
+        keyword? #(= cipher (encode % message))]
+    (->> candidates
+         (map #(apply str %))
+         (filter keyword?)
+         (last))))

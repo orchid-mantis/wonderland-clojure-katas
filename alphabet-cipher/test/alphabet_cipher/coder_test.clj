@@ -46,11 +46,11 @@
     (is (= "meetmebythetree"
            (cipher/decode "scones" "egsgqwtahuiljgs")))))
 
-; (deftest test-decipher
-;   (testing "can extract the secret keyword given an encrypted message and the original message"
-;     (is (= "vigilance"
-;            (cipher/decipher "opkyfipmfmwcvqoklyhxywgeecpvhelzg" "thequickbrownfoxjumpsoveralazydog")))
-;     (is (= "scones"
-;            (cipher/decipher "hcqxqqtqljmlzhwiivgbsapaiwcenmyu" "packmyboxwithfivedozenliquorjugs")))
-;     (is (= "abcabcx"
-;            (cipher/decipher "hfnlphoontutufa" "hellofromrussia")))))
+(deftest test-decipher
+  (testing "can extract the secret keyword given an encrypted message and the original message"
+    (is (= "vigilance"
+           (cipher/decipher "opkyfipmfmwcvqoklyhxywgeecpvhelzg" "thequickbrownfoxjumpsoveralazydog")))
+    (is (= "scones"
+           (cipher/decipher "hcqxqqtqljmlzhwiivgbsapaiwcenmyu" "packmyboxwithfivedozenliquorjugs")))
+    (is (= "abcabcx"
+           (cipher/decipher "hfnlphoontutufa" "hellofromrussia")))))
