@@ -1,7 +1,46 @@
 (ns fox-goose-bag-of-corn.puzzle-test
-  (:require [clojure.test :refer :all]
-            [fox-goose-bag-of-corn.puzzle :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
+            [fox-goose-bag-of-corn.puzzle :as puzzle]
             [clojure.set]))
+
+(deftest test-possible-picks
+  (testing "cannot pick item which was picked last time"
+    (is (= #{nil}
+           (set (puzzle/possible-picks [:fox] :fox))))
+    (is (= #{:fox}
+           (set (puzzle/possible-picks [:fox] nil)))))
+  
+  (testing "can pick only goose - other picks leads to invalid states"
+    (is (= #{:goose}
+           (set (puzzle/possible-picks [:fox :goose :corn] nil)))))
+  (testing "can pick fox or return with nothing (nil)"
+    (is (= #{:fox nil}
+           (set (puzzle/possible-picks [:fox :corn] :corn)))))
+  (testing "can pick only goose - fox was picked last time and nothing leads to invalid state"
+    (is (= #{:goose}
+           (set (puzzle/possible-picks [:fox :goose] :fox))))))
+
+(deftest test-move-right
+  (testing "can move one item from left to right"
+    (let [moves (map (partial map set) (puzzle/move-right [:fox :goose :corn] [] :corn))]
+      (is (= [[#{:fox :goose} #{:boat :you :corn} #{}]
+              [#{:fox :goose} #{:boat} #{:you :corn}]]
+             moves)))
+    (let [moves (map (partial map set) (puzzle/move-right [:fox] [:apple] :fox))]
+      (is (= [[#{} #{:boat :you :fox} #{:apple}]
+              [#{} #{:boat} #{:you :apple :fox}]]
+             moves)))))
+
+(deftest test-move-left
+  (testing "can move one item from right to left"
+    (let [moves (map (partial map set) (puzzle/move-left [] [:fox :goose :corn] :corn))]
+      (is (= [[#{} #{:boat :you :corn} #{:fox :goose}]
+              [#{:you :corn} #{:boat} #{:fox :goose}]]
+             moves)))
+    (let [moves (map (partial map set) (puzzle/move-left [:fox] [:apple] :apple))]
+      (is (= [[#{:fox} #{:boat :you :apple} #{}]
+              [#{:you :apple :fox} #{:boat} #{}]]
+             moves)))))
 
 (defn validate-move [step1 step2]
   (testing "only you and another thing can move"
@@ -15,7 +54,7 @@
       step2)))
 
 (deftest test-river-crossing-plan
-  (let [crossing-plan (map (partial map set) (river-crossing-plan))]
+  (let [crossing-plan (map (partial map set) (puzzle/river-crossing-plan))]
     (testing "you begin with the fox, goose and corn on one side of the river"
       (is (= [#{:you :fox :goose :corn} #{:boat} #{}]
              (first crossing-plan))))
@@ -41,5 +80,5 @@
             right-moves (map last crossing-plan)]
         (reduce validate-move left-moves)
         (reduce validate-move middle-moves)
-        (reduce validate-move right-moves )))))
+        (reduce validate-move right-moves)))))
 
