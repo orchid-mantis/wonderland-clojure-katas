@@ -3,44 +3,49 @@
             [fox-goose-bag-of-corn.puzzle :as puzzle]
             [clojure.set]))
 
-(deftest test-possible-picks
-  (testing "cannot pick item which was picked last time"
-    (is (= #{nil}
-           (set (puzzle/possible-picks [:fox] :fox))))
-    (is (= #{:fox}
-           (set (puzzle/possible-picks [:fox] nil)))))
-  
-  (testing "can pick only goose - other picks leads to invalid states"
-    (is (= #{:goose}
-           (set (puzzle/possible-picks [:fox :goose :corn] nil)))))
-  (testing "can pick fox or return with nothing (nil)"
-    (is (= #{:fox nil}
-           (set (puzzle/possible-picks [:fox :corn] :corn)))))
-  (testing "can pick only goose - fox was picked last time and nothing leads to invalid state"
-    (is (= #{:goose}
-           (set (puzzle/possible-picks [:fox :goose] :fox))))))
+(deftest test-next-move
+  (testing "can move with one item to other side"
+    (is (= [[#{:goose} #{:boat :you :fox} #{}]
+            [#{:goose} #{:boat} #{:you :fox}]]
+           (puzzle/next-move [#{:you :goose :fox} #{:boat} #{}] :fox)))
+    (is (= [[#{:goose :fox} #{:boat :you :corn} #{}]
+            [#{:goose :fox :you :corn} #{:boat} #{}]]
+           (puzzle/next-move [#{:goose :fox} #{:boat} #{:you :corn}] :corn))))
+  (testing "can move without any item"
+    (is (= [[#{:goose} #{:boat :you} #{:corn}]
+            [#{:goose} #{:boat} #{:you :corn}]]
+           (puzzle/next-move [#{:you :goose} #{:boat} #{:corn}] nil))))
+  (testing "cannot move item which is not present with you"
+    (is (= nil
+           (puzzle/next-move [#{:you :goose} #{:boat} #{:fox}] :fox)))))
 
-(deftest test-move-right
-  (testing "can move one item from left to right"
-    (let [moves (map (partial map set) (puzzle/move-right [:fox :goose :corn] [] :corn))]
-      (is (= [[#{:fox :goose} #{:boat :you :corn} #{}]
-              [#{:fox :goose} #{:boat} #{:you :corn}]]
-             moves)))
-    (let [moves (map (partial map set) (puzzle/move-right [:fox] [:apple] :fox))]
-      (is (= [[#{} #{:boat :you :fox} #{:apple}]
-              [#{} #{:boat} #{:you :apple :fox}]]
-             moves)))))
+(deftest test-valid?
+  (testing "can validate move"
+    (is (= true
+           (puzzle/valid? [[#{:fox :corn} #{:you :boat :goose} #{}]
+                           [#{:fox :corn} #{:boat} #{:you :goose}]])))
+    (is (= true
+           (puzzle/valid? [[#{:fox} #{:you :boat :goose} #{:corn}]
+                           [#{:fox} #{:boat} #{:you :goose :corn}]])))
+    (is (= false
+           (puzzle/valid? [[#{:goose :corn} #{:you :fox :boat} #{}]
+                           [#{:goose :corn} #{:boat} #{:you :fox}]])))
+    (is (= false
+           (puzzle/valid? [[#{:fox :goose} #{:you :corn} #{}]
+                           [#{:fox :goose} #{:boat} #{:you :corn}]])))))
 
-(deftest test-move-left
-  (testing "can move one item from right to left"
-    (let [moves (map (partial map set) (puzzle/move-left [] [:fox :goose :corn] :corn))]
-      (is (= [[#{} #{:boat :you :corn} #{:fox :goose}]
-              [#{:you :corn} #{:boat} #{:fox :goose}]]
-             moves)))
-    (let [moves (map (partial map set) (puzzle/move-left [:fox] [:apple] :apple))]
-      (is (= [[#{:fox} #{:boat :you :apple} #{}]
-              [#{:you :apple :fox} #{:boat} #{}]]
-             moves)))))
+(deftest test-useful?
+  (testing "can check whether item is always moved from left bank"
+    (is (= true
+           (puzzle/useful? [[#{:fox :corn} #{:you :boat :goose} #{}]
+                            [#{:fox :corn} #{:boat} #{:you :goose}]])))
+    (is (= false
+           (puzzle/useful? [[#{:fox :goose :corn} #{:you :boat} #{}]
+                            [#{:fox :goose :corn} #{:boat} #{:you}]])))
+    (testing "return true when move from right to left bank"
+      (is (= true
+             (puzzle/useful? [[#{:fox :corn} #{:you :boat} #{:goose}]
+                              [#{:you :fox :corn} #{:boat} #{:goose}]]))))))
 
 (defn validate-move [step1 step2]
   (testing "only you and another thing can move"
