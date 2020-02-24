@@ -16,42 +16,41 @@
          (map #(first (s/difference set-items %)))
          (remove #(= last-picked %)))))
 
-(defn move-from [from picked]
-  (let [change (if (nil? picked) #{:you} #{picked :you})]
+(defn update-from [from item]
+  (let [change (if (nil? item) #{:you} #{item :you})]
     (vec (s/difference (set from) change))))
 
-(defn move-dest [dest picked]
-  (let [change (if (nil? picked) [:you] [:you picked])]
+(defn update-dest [dest item]
+  (let [change (if (nil? item) [:you] [:you item])]
     (vec (concat dest change))))
 
-(defn move-boat [item]
+(defn update-boat [item]
   (if (nil? item) [:boat :you] [:boat :you item]))
 
 (defn move-right [left right item]
-  (let [left (move-from left item)]
-    [[left (move-boat item) right]
-     [left [:boat] (move-dest right item)]]))
+  (let [left (update-from left item)]
+    [[left (update-boat item) right]
+     [left [:boat] (update-dest right item)]]))
 
 (defn move-left [left right item]
-  (let [right (move-from right item)]
-    [[left (move-boat item) right]
-     [(move-dest left item) [:boat] right]]))
+  (let [right (update-from right item)]
+    [[left (update-boat item) right]
+     [(update-dest left item) [:boat] right]]))
 
-(defn gen-moves [moves n target last-pickeded]
-  (let [last-move (last moves)
-        [left _ right] last-move]
+(defn gen-moves [moves n target item]
+  (let [[left _ right] (last moves)]
     (cond
       (and (empty? left) (= target :left)) moves
 
       (= n 0) false
 
       (= target :right)
-      (let [item (first (remove nil? (possible-picks left last-pickeded)))] ; always pick item from left
+      (let [item (first (remove nil? (possible-picks left item)))] ; always pick item from left
         (concat moves
                 (gen-moves (move-right left right item) (dec n) :left item)))
 
       (= target :left)
-      (let [possible-picks (possible-picks right last-pickeded)
+      (let [possible-picks (possible-picks right item)
             possible-moves (fn [item] (gen-moves
                                        (move-left left right item)
                                        (dec n)
