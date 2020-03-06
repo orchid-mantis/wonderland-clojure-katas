@@ -6,6 +6,14 @@
            [1  0 1]
            [1  0 :E]])
 
+(deftest test-position
+  (testing "can find position of start location (marked with :S)"
+    (is (= [0 0]
+           (solver/position maze :S))))
+  (testing "can find position of end location (marked with :E)"
+    (is (= [2 2]
+           (solver/position maze :E)))))
+
 (deftest test-next-moves
   (testing "can generate all possible moves from current position in maze"
     (is (= [[0 1]]
@@ -26,13 +34,23 @@
                [1  :x :x]]]
       (is (= sol (solver/solve-maze maze)))))
 
-    (testing "can find way to exit with 4x4 maze"
+  (testing "can find way to exit with 4x4 maze"
     (let [maze [[:S 0 0 1]
                 [1  1 0 0]
                 [1  0  0 1]
                 [1  1  0 :E]]
           sol [[:x :x :x 1]
-                [1  1 :x 0]
-                [1  0 :x 1]
-                [1  1  :x :x]]]
-     (is (= sol (solver/solve-maze maze))))))
+               [1  1 :x 0]
+               [1  0 :x 1]
+               [1  1  :x :x]]]
+      (is (= sol (solver/solve-maze maze))))
+
+    (let [maze [[0  0  0  :S]
+                [0  1  1  1]
+                [0  0  0  1]
+                [0  1  0  :E]]
+          sol [[:x :x :x :x]
+               [:x 1  1  1]
+               [:x :x :x 1]
+               [0  1  :x :x]]]
+      (is (= sol (solver/solve-maze maze))))))

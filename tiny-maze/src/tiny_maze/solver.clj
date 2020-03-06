@@ -1,5 +1,11 @@
 (ns tiny-maze.solver)
 
+(defn position [maze symbol]
+  (first (for [row (map-indexed (fn [x row] [x row]) maze)
+               col (map-indexed (fn [y val] [y val]) (second row))
+               :when (= symbol (second col))]
+           [(first row) (first col)])))
+
 (defn next-moves [maze [x y]]
   (let [neighbours [[(dec x) y]
                     [x (dec y)]
@@ -19,5 +25,6 @@
                  (first)))))
 
 (defn solve-maze [maze]
-  (let [path (gen-path maze [[0 0]])]
+  (let [start (position maze :S)
+        path (gen-path maze [start])]
     (reduce #(assoc-in %1 %2 :x) maze path)))
