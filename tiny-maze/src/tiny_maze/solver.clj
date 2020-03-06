@@ -1,17 +1,11 @@
 (ns tiny-maze.solver)
 
 (defn next-moves [m [x y]]
-  (let [left-pos  [(dec x) y]
-        upper-pos [x (dec y)]
-        right-pos [(inc x) y]
-        lower-pos [x (inc y)]
-        neighbours [[left-pos (get-in m left-pos)]
-                    [upper-pos (get-in m upper-pos)]
-                    [right-pos (get-in m right-pos)]
-                    [lower-pos (get-in m lower-pos)]]]
-    (->> neighbours
-         (filter (fn [[_ val]] (or (= val 0) (= val :E))))
-         (map first))))
+  (->> [[(dec x) y]
+        [x (dec y)]
+        [(inc x) y]
+        [x (inc y)]]
+       (filter #(or (= (get-in m %) 0) (= (get-in m %) :E)))))
 
 (defn gen-path [m path [x y]]
   (cond
