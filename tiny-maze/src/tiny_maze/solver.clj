@@ -1,11 +1,12 @@
 (ns tiny-maze.solver)
 
-(defn next-moves [m [x y]]
-  (->> [[(dec x) y]
-        [x (dec y)]
-        [(inc x) y]
-        [x (inc y)]]
-       (filter #(or (= (get-in m %) 0) (= (get-in m %) :E)))))
+(defn next-moves [maze [x y]]
+  (let [neighbours [[(dec x) y]
+                    [x (dec y)]
+                    [(inc x) y]
+                    [x (inc y)]]]
+    (->> neighbours
+         (filter #(or (= (get-in maze %) 0) (= (get-in maze %) :E))))))
 
 (defn gen-path [maze path]
   (let [[x y] (last path)]
