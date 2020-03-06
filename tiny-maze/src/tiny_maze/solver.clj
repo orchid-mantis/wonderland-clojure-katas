@@ -23,7 +23,5 @@
                (first))))
 
 (defn solve-maze [maze]
-  (let [path (gen-path maze [] [0 0])
-        new-maze (->> (map (fn [pos] [pos maze]) path)
-                      (reduce (fn [[pos1 m1] [pos2 _]] [pos2 (assoc-in m1 pos1 :x)])))]
-    (assoc-in (second new-maze) (first new-maze) :x)))
+  (let [path (gen-path maze [] [0 0])]
+    (reduce #(assoc-in %1 %2 :x) maze path)))
