@@ -1,10 +1,10 @@
 (ns tiny-maze.solver)
 
 (defn position [maze symbol]
-  (first (for [row (map-indexed (fn [x row] [x row]) maze)
-               col (map-indexed (fn [y val] [y val]) (second row))
-               :when (= symbol (second col))]
-           [(first row) (first col)])))
+  (first (for [[x row] (map-indexed vector maze)
+               [y val] (map-indexed vector row)
+               :when (= symbol val)]
+           [x y])))
 
 (defn next-moves [maze [x y]]
   (let [neighbours [[(dec x) y]
